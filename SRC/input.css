@@ -1,0 +1,27 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+* {
+  font-family: "IranSans";
+  outline: none;
+  padding: 0;
+  margin: 0;
+}
+
+#map {
+  flex: 1;
+  background-color: #fff;
+}
+.leaflet-popup .leaflet-popup-content-wrapper {
+  background-color: #2d3439e6;
+  backdrop-filter: blur(20px);
+  color: #fefefe;
+  border-radius: 5px;
+  padding-right: 0.6rem;
+}
+
+.leaflet-popup .leaflet-popup-tip {
+  background-color: rgb(45, 52, 57, 0.9);
+  backdrop-filter: blur(10px);
+}
