@@ -9,9 +9,21 @@
     <link rel="stylesheet" href="../leaflet/leaflet.css" />
     <script defer src="../leaflet/leaflet.js"></script>
     <script defer src="script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&family=Rubik:wght@300&display=swap" rel="stylesheet">
   </head>
   <body>
-    <section class="">
+    <section class="flex">
+      <section
+        id="list"
+        class="hidden fixed top-0 right-0 z-[1000] w-1/5 h-[100vh] bg-white/50 backdrop-blur"
+      >
+        <ul
+          class="mt-20 flex flex-col gap-y-6 items-center"
+          id="listContainer"
+        ></ul>
+      </section>
       <section
         class="hidden fixed top-0 left-0 w-full h-full z-[10000]"
         id="modal"
@@ -19,7 +31,16 @@
         <section
           class="w-max p-3 rounded-lg shadow-lg bg-black/55 backdrop-blur-[20px] fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 z-[10000]"
         >
-          <button id="modalBtn">❌</button>
+          <button id="modalBtn">
+            <script src="https://cdn.lordicon.com/lordicon.js"></script>
+            <lord-icon
+              src="https://cdn.lordicon.com/nqtddedc.json"
+              trigger="hover"
+              colors="primary:#ff0000"
+              style="width: 30px; height: 30px"
+            >
+            </lord-icon>
+          </button>
           <form
             action="index.html"
             class="form flex flex-col justify-center items-center gap-4 p-8"
@@ -45,6 +66,47 @@
             />
           </form>
         </section>
+      </section>
+      <section class="fixed top-4 right-4 z-[10000]">
+        <button id="menuBtn" class="bg-white/50 backdrop-blur p-3 rounded-md">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+          >
+            <g fill="none">
+              <path
+                d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"
+              />
+              <path
+                fill="#374259"
+                d="M20 17.5a1.5 1.5 0 0 1 .144 2.993L20 20.5H4a1.5 1.5 0 0 1-.144-2.993L4 17.5zm0-7a1.5 1.5 0 0 1 0 3H4a1.5 1.5 0 0 1 0-3zm0-7a1.5 1.5 0 0 1 0 3H4a1.5 1.5 0 1 1 0-3z"
+              />
+            </g>
+          </svg>
+        </button>
+        <button
+          id="closeMenuBtn"
+          class="hidden bg-white/50 backdrop-blur p-3 rounded-md"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="30"
+            height="30"
+            viewBox="0 0 24 24"
+          >
+            <g fill="none" fill-rule="evenodd">
+              <path
+                d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"
+              />
+              <path
+                fill="#374259"
+                d="m12 14.122l5.303 5.303a1.5 1.5 0 0 0 2.122-2.122L14.12 12l5.304-5.303a1.5 1.5 0 1 0-2.122-2.121L12 9.879L6.697 4.576a1.5 1.5 0 1 0-2.122 2.12L9.88 12l-5.304 5.304a1.5 1.5 0 1 0 2.122 2.12z"
+              />
+            </g>
+          </svg>
+        </button>
       </section>
       <div id="map" class="w-auto h-[100vh] p-12 z-40"></div>
     </section>
