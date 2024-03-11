@@ -2,10 +2,25 @@
 
 const form = document.querySelector(".form");
 const closeModalBtn = document.querySelector("#modalBtn");
+const menuBtn = document.querySelector("#menuBtn");
+const closeMenuBtn = document.querySelector("#closeMenuBtn");
 const modal = document.querySelector("#modal");
 const nameInput = document.querySelector("#name");
 const typeInput = document.querySelector("#type");
 const coordsContainer = document.querySelector("#coords");
+const list = document.querySelector("#list");
+const listContainer = document.querySelector("#listContainer");
+
+menuBtn.addEventListener("click", function () {
+  list.classList.remove("hidden");
+  closeMenuBtn.classList.remove("hidden");
+  menuBtn.classList.add("hidden");
+});
+closeMenuBtn.addEventListener("click", function () {
+  list.classList.add("hidden");
+  menuBtn.classList.remove("hidden");
+  closeMenuBtn.classList.add("hidden");
+});
 
 class App {
   #map;
@@ -29,6 +44,7 @@ class App {
       const place = new Place(name, type, [lat, lng], id);
       this.#places.push(place);
       this._renderPlaceOnMap(place);
+      this._renderPlaceOnList(place);
       this._closeForm();
       this._setLocalStorage();
     } else {
@@ -38,7 +54,6 @@ class App {
   }
 
   _renderPlaceOnMap(place) {
-    console.log(place);
     L.marker(place.coords)
       .addTo(this.#map)
       .bindPopup(
@@ -51,6 +66,22 @@ class App {
       )
       .setPopupContent(`${place.name} ${place.type}`)
       .openPopup();
+  }
+
+  _renderPlaceOnList(place) {
+    const [lat, lng] = place.coords;
+    const html = `
+    <li class="bg-blue-600 w-11/12 p-2 rounded-md border-r-white border-r-8">
+      <p class="text-white py-1">نام مکان :<span> ${place.name} </span></p>
+      <p class="text-white py-1">دسته بندی مکان :<span> ${
+        place.type
+      } </span></p>
+      <p class="text-white py-1"> موقعیت مکانی :<span> ${lat.toFixed(
+        2
+      )}، ${lng.toFixed(2)} </span></p>
+    </li>
+    `;
+    listContainer.insertAdjacentHTML("afterbegin", html);
   }
 
   _getPosition() {
@@ -75,9 +106,11 @@ class App {
 
     this.#map.on("click", this._showForm.bind(this));
 
-    this.#places.forEach((place) => {
-      this._renderPlaceOnMap(place);
-    });
+    if (this.#places) {
+      this.#places.forEach((place) => {
+        this._renderPlaceOnMap(place);
+      });
+    }
   }
 
   _showForm(mapE) {
@@ -105,7 +138,10 @@ class App {
   }
   _getLocalStorage() {
     const data = JSON.parse(localStorage.getItem("places"));
-    this.#places = data;
+    if (data) this.#places = data;
+    this.#places.forEach((place) => {
+      this._renderPlaceOnList(place);
+    });
   }
 }
 const app = new App();
