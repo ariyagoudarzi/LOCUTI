@@ -1,3 +1,11 @@
+/*
+! tailwindcss v3.4.1 | MIT License | https://tailwindcss.com
+*/
+
+/*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
 
 *,
 ::before,
@@ -9,7 +17,7 @@
   border-style: solid;
   /* 2 */
   border-color: #e5e7eb;
-  font-family: "Baloo Bhaijaan 2", sans-serif;
+  /* 2 */
 }
 
 ::before,
@@ -876,7 +884,7 @@ video {
 }
 
 * {
-  font-family: "IranSans";
+  font-family: "Baloo Bhaijaan 2", sans-serif;
   outline: none;
   padding: 0;
   margin: 0;
