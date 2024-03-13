@@ -9,6 +9,7 @@ const coordsContainer = document.querySelector("#coords");
 const list = document.querySelector("#list");
 const listContainer = document.querySelector("#listContainer");
 const BtnDelPlaces = document.querySelector("#delPlaces");
+const currentPositionBtn = document.querySelector("#currentPosition");
 
 class App {
   #map;
@@ -16,7 +17,8 @@ class App {
   #places = [];
   #marker = [];
   constructor() {
-    this._getPosition();
+    this._loadMap();
+    currentPositionBtn.addEventListener("click", this._getPosition.bind(this));
     this._getLocalStorage();
     closeModalBtn.addEventListener("click", this._closeForm.bind(this));
     form.addEventListener("submit", this._newPlace.bind(this));
@@ -88,49 +90,65 @@ class App {
   _renderPlaceOnList(place) {
     const [lat, lng] = place.coords;
 
-    const req2 = new XMLHttpRequest();
-    req2.open("GET", `https://api.neshan.org/v5/reverse?lat=${lat}&lng=${lng}`);
-    req2.setRequestHeader(
-      "Api-Key",
-      "service.02596937d4f9413eab8a91c26a284083"
-    );
-    req2.send();
-
-    req2.addEventListener("load", function () {
-      const data = JSON.parse(this.responseText);
-      console.log(data.formatted_address);
-      let html = `
-    <li class="bg-purple-700 w-11/12 py-4 px-6 rounded-md flex justify-between" data-id="${place.id}">
-      <div>
-        <p class="text-white py-1">
-                نام مکان : <span> ${place.name} </span>
-        </p>
-        <p class="text-white py-1"> آدرس: <span class="text-sm"> ${data.formatted_address}</span></p>       
-    `;
-      if (!(place.type === "")) {
-        html += `<p class="text-white">
-      دسته بندی مکان :<span> ${place.type} </span>
-    </p>
-  </div>
-</li>`;
-      } else {
-        html += `</li>`;
-      }
-      listContainer.insertAdjacentHTML("afterbegin", html);
-    });
+    fetch(`https://api.neshan.org/v5/reverse?lat=${lat}&lng=${lng}`, {
+      headers: {
+        "Api-Key": "service.02596937d4f9413eab8a91c26a284083",
+      },
+    })
+      .then((response) => {
+        return response.json();
+        // throw new Error(`(${response.status})`);
+      })
+      .then(function (data) {
+        let html = `
+        <li class="bg-purple-700 w-full py-4 px-6 rounded-md flex justify-between" data-id="${place.id}">
+          <div>
+            <p class="text-white py-1"> نام مکان : <span> ${place.name} </span></p>
+            <p class="text-white py-1"> آدرس: <span class="text-sm"> ${data.formatted_address}</span></p>       `;
+        if (!(place.type === "")) {
+          html += `<p class="text-white"> دسته بندی مکان :<span> ${place.type} </span></p>
+          </div>
+        </li>`;
+        } else {
+          html += `</li>`;
+        }
+        listContainer.insertAdjacentHTML("afterbegin", html);
+      })
+      .catch((err) => {
+        const html = `
+        <li class="text-white bg-red-600 p-4 rounded-md">خطایی رخ داد لطفا دوباره امتحان کنید. <span style="font-family: monospace;">${err}</span></li>
+        `;
+        listContainer.insertAdjacentHTML("afterbegin", html);
+      });
   }
 
   _getPosition() {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
-      this._loadMap.bind(this),
-      function () {
-        console.log("error");
+      this._loadCurrentMap.bind(this),
+      function (e) {
+        console.log(e.message);
+        const html = `
+        <li class="bg-red-600 text-white p-4 rounded-md">مشکلی پیش آمد. لطفا دوباره سعی کنید. <p style="font-family: monospace;">${e.message}</p></li>
+        `;
+        listContainer.insertAdjacentHTML("afterbegin", html);
       }
     );
   }
 
-  _loadMap(position) {
+  _loadMap() {
+    this.#map = L.map("map").setView([35.7029, 51.4014], 12);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
+      this.#map
+    );
+  }
+
+  _loadCurrentMap(position) {
+    if (this.#map) {
+      this.#map.off();
+      this.#map.remove();
+    }
+
     const { latitude } = position.coords;
     const { longitude } = position.coords;
 
