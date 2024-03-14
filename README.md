@@ -11,6 +11,7 @@ LOCUTI is a web application built with JavaScript, HTML, CSS, and Tailwind CSS t
 - Ability to confirm the location, which then appears in the list along with its address and category (if provided).
 - Button to delete all marked locations.
 - Persistence of marked locations even after page reload.
+- Online preview: [ariyagoudarzi.github.io/LOCUTI](https://ariyagoudarzi.github.io/LOCUTI/src/)
 
 ## Usage 🚀
 
