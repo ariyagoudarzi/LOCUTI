@@ -16,7 +16,9 @@ LOCUTI is a web application built with JavaScript, HTML, CSS, and Tailwind CSS t
 
 1. Clone the repository to your local machine:
 
-```git clone https://github.com/ariyagoudarzi/LOCUTI.git```
+```
+git clone https://github.com/ariyagoudarzi/LOCUTI.git
+```
 
 
 2. Open the `index.html` file in your web browser.
