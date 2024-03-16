@@ -20,6 +20,7 @@ class App {
     this._loadMap();
     currentPositionBtn.addEventListener("click", this._getPosition.bind(this));
     this._getLocalStorage();
+    this._RenderLocaleStorage();
     closeModalBtn.addEventListener("click", this._closeForm.bind(this));
     form.addEventListener("submit", this._newPlace.bind(this));
     listContainer.addEventListener("click", this._moveToPopup.bind(this));
@@ -87,53 +88,58 @@ class App {
     this.#marker.push(marker);
   }
 
-  _renderPlaceOnList(place) {
-    const [lat, lng] = place.coords;
-
-    fetch(`https://api.neshan.org/v5/reverse?lat=${lat}&lng=${lng}`, {
-      headers: {
-        "Api-Key": "service.02596937d4f9413eab8a91c26a284083",
-      },
-    })
-      .then((response) => {
-        return response.json();
-        // throw new Error(`(${response.status})`);
-      })
-      .then(function (data) {
-        let html = `
-        <li class="bg-purple-700 w-full py-4 px-6 rounded-md flex justify-between" data-id="${place.id}">
-          <div>
-            <p class="text-white py-1"> نام مکان : <span> ${place.name} </span></p>
-            <p class="text-white py-1"> آدرس: <span class="text-sm"> ${data.formatted_address}</span></p>       `;
-        if (!(place.type === "")) {
-          html += `<p class="text-white"> دسته بندی مکان :<span> ${place.type} </span></p>
-          </div>
-        </li>`;
-        } else {
-          html += `</li>`;
+  async _renderPlaceOnList(place) {
+    try {
+      if (this.#places) BtnDelPlaces.classList.remove("hidden");
+      const [lat, lng] = place.coords;
+      const geoRes = await fetch(
+        `https://api.neshan.org/v5/reverse?lat=${lat}&lng=${lng}`,
+        {
+          headers: {
+            "Api-Key": "service.02596937d4f9413eab8a91c26a284083",
+            // service.02596937d4f9413eab8a91c26a284083
+          },
         }
-        listContainer.insertAdjacentHTML("afterbegin", html);
-      })
-      .catch((err) => {
-        const html = `
-        <li class="text-white bg-red-600 p-4 rounded-md">خطایی رخ داد لطفا دوباره امتحان کنید. <span style="font-family: monospace;">${err}</span></li>
-        `;
-        listContainer.insertAdjacentHTML("afterbegin", html);
-      });
+      );
+      if (!geoRes.ok) throw new Error(`(${geoRes.status})`);
+      const data = await geoRes.json();
+
+      let html = `
+          <li class="bg-purple-700 w-full py-4 px-6 rounded-md flex justify-between" data-id="${place.id}">
+            <div>
+              <p class="text-white py-1"> نام مکان : <span> ${place.name} </span></p>
+              <p class="text-white py-1"> آدرس: <span class="text-sm"> ${data.formatted_address}</span></p>       `;
+      if (!(place.type === "")) {
+        html += `<p class="text-white"> دسته بندی مکان :<span> ${place.type} </span></p>
+            </div>
+          </li>`;
+      } else {
+        html += `</li>`;
+      }
+      listContainer.insertAdjacentHTML("afterbegin", html);
+
+      // this.#places.forEach((place) => {
+      //   this._renderPlaceOnList(place);
+      // });
+    } catch (err) {
+      const html = `<li class="bg-red-600 text-white p-4 rounded-md">مشکلی پیش آمد. لطفا دوباره سعی کنید.<p style="font-family: monospace;">${err}</p></li>`;
+      listContainer.insertAdjacentHTML("afterbegin", html);
+    }
   }
 
-  _getPosition() {
+  async _getPosition() {
     if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      this._loadCurrentMap.bind(this),
-      function (e) {
-        console.log(e.message);
-        const html = `
-        <li class="bg-red-600 text-white p-4 rounded-md">مشکلی پیش آمد. لطفا دوباره سعی کنید. <p style="font-family: monospace;">${e.message}</p></li>
-        `;
-        listContainer.insertAdjacentHTML("afterbegin", html);
-      }
-    );
+    try {
+      const position = await new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+      this._loadCurrentMap(position);
+    } catch (e) {
+      console.error(`${e.message} (${e.code}) ⛔`);
+      const html = `
+        <li class="bg-red-600 text-white p-4 rounded-md">مشکلی پیش آمد. لطفا دسترسی مکان را آزاد کنید. <p style="font-family: monospace;">${e.message} (${e.code})</p></li>`;
+      listContainer.insertAdjacentHTML("afterbegin", html);
+    }
   }
 
   _loadMap() {
@@ -141,6 +147,16 @@ class App {
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
       this.#map
     );
+
+    this.#map.on("click", this._showForm.bind(this));
+
+    this._getLocalStorage();
+    if (this.#places) {
+      this.#places.forEach((place) => {
+        this._renderPlaceOnMap(place);
+        BtnDelPlaces.classList.remove("hidden");
+      });
+    }
   }
 
   _loadCurrentMap(position) {
@@ -194,6 +210,9 @@ class App {
   _getLocalStorage() {
     const data = JSON.parse(localStorage.getItem("places"));
     if (data) this.#places = data;
+  }
+
+  _RenderLocaleStorage() {
     this.#places.forEach((place) => {
       this._renderPlaceOnList(place);
     });
