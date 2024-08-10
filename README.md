@@ -2,6 +2,11 @@
 
 LOCUTI is a web application built with JavaScript, HTML, CSS, and Tailwind CSS that allows users to mark and save locations on a map along with optional categories. This repository contains the source code for LOCUTI.
 
+
+![تصویر از اپلیکیشن مدیریت کارها](https://s8.uupload.ir/files/image_2024-08-10_16-26-41_ue68.png?text=تصویر+اپلیکیشن+مدیریت+کارها)
+
+---
+
 ## Features 🌟
 
 - Interactive map display upon loading the website.
